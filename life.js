@@ -60,7 +60,10 @@ class Game {
     this.board = new Board()
     this.timer = null
     this.averageTime = 0
+    this.deadCellColor = '#FFEBCD'
     this.context = this._createContext(container)
+    this.palette = window.chroma.scale(['#32CD32', '#8B4513']).mode('lch').colors(256)
+    this.palette[0] = this.deadCellColor
     this.board.randomize()
     this.render()
   }
@@ -71,7 +74,7 @@ class Game {
     canvas.height = boardSize * cellSize
     container.appendChild(canvas)
     const context = canvas.getContext('2d', { alpha: false })
-    context.fillStyle = '#ccc'
+    context.fillStyle = this.deadCellColor
     context.fillRect(0, 0, boardSize * cellSize, boardSize * cellSize)
     return context
   }
@@ -98,13 +101,13 @@ class Game {
   }
 
   render () {
-    const { context } = this
+    const { context, palette } = this
     const { data, lastData } = this.board
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
         const index = x + y * boardSize
         if (data[index] !== lastData[index]) {
-          context.fillStyle = data[index] ? '#222' : '#ccc'
+          context.fillStyle = palette[data[index]]
           context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
         }
       }
