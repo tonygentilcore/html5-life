@@ -1,11 +1,11 @@
 const boardSize = 400
 const cellSize = 2
-const stepIntervalMs = 75
+const stepIntervalMs = 30
 
 class Board {
   constructor () {
-    this.data = new Array(boardSize * boardSize)
-    this.buffer = new Array(boardSize * boardSize)
+    this.data = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
+    this.buffer = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
     this.generation = 0
   }
 
