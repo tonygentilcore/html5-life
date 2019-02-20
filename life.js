@@ -9,27 +9,23 @@ class Board {
     this.generation = 0
   }
 
-  _countNeighbors (x, y) {
-    const up = ((y || boardSize) - 1) * boardSize
-    const middle = y * boardSize
-    const down = ((y + 1) % boardSize) * boardSize
-    const left = (x || boardSize) - 1
-    const right = (x + 1) % boardSize
-    return (this.data[x + up] +
-            this.data[right + up] +
-            this.data[right + middle] +
-            this.data[right + down] +
-            this.data[x + down] +
-            this.data[left + down] +
-            this.data[left + middle] +
-            this.data[left + up])
-  }
-
   step () {
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
-        const numNeighbors = this._countNeighbors(x, y)
-        const index = x + y * boardSize
+        const up = ((y || boardSize) - 1) * boardSize
+        const middle = y * boardSize
+        const down = ((y + 1) % boardSize) * boardSize
+        const left = (x || boardSize) - 1
+        const right = (x + 1) % boardSize
+        const numNeighbors = (this.data[x + up] +
+                              this.data[right + up] +
+                              this.data[right + middle] +
+                              this.data[right + down] +
+                              this.data[x + down] +
+                              this.data[left + down] +
+                              this.data[left + middle] +
+                              this.data[left + up])
+        const index = x + middle
         if (numNeighbors < 2 || numNeighbors > 3) {
           this.buffer[index] = 0
         } else if (numNeighbors === 3) {
@@ -84,7 +80,7 @@ class Game {
       } else {
         this.averageTime = durationMs
       }
-      console.log(this.averageTime) // 0.278
+      console.log(this.averageTime) // 6.35
     }, stepIntervalMs)
   }
 
