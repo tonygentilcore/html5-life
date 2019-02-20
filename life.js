@@ -1,6 +1,6 @@
 const boardSize = 400
 const cellSize = 2
-const stepIntervalMs = 30
+const stepIntervalMs = 25
 
 class Board {
   constructor () {
@@ -26,12 +26,15 @@ class Board {
                               this.data[left + middle] +
                               this.data[left + up])
         const index = x + middle
-        if (numNeighbors < 2 || numNeighbors > 3) {
-          this.buffer[index] = 0
-        } else if (numNeighbors === 3) {
-          this.buffer[index] = 1
-        } else {
-          this.buffer[index] = this.data[index]
+        switch (numNeighbors) {
+          case 2:
+            this.buffer[index] = this.data[index]
+            break
+          case 3:
+            this.buffer[index] = 1
+            break
+          default:
+            this.buffer[index] = 0
         }
       }
     }
@@ -80,7 +83,7 @@ class Game {
       } else {
         this.averageTime = durationMs
       }
-      console.log(this.averageTime) // 6.35
+      console.log(this.averageTime) // 6.05
     }, stepIntervalMs)
   }
 
