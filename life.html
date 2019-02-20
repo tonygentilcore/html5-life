@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<style>
+  .cell {
+    background: gray;
+    display: block;
+  }
+
+  #container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #controls {
+    padding: 10px;
+  }
+</style>
+
+<script src="life.js"></script>
+
+<div id="container"></div>
+
+<script>
+  const game = new Game(document.getElementById('container'))
+</script>
+
+<div id="controls">
+  <input type="button" value="start" onclick="game.start()">
+  <input type="button" value="stop" onclick="game.stop()">
+</div>
