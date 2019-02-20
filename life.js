@@ -1,11 +1,11 @@
-const boardSize = 400
-const cellSize = 2
+const boardSize = 250
+const cellSize = 4
 const stepIntervalMs = 25
 
 class Board {
   constructor () {
-    this.data = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
-    this.lastData = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
+    this.data = new Uint8ClampedArray(new ArrayBuffer(boardSize * boardSize))
+    this.lastData = new Uint8ClampedArray(new ArrayBuffer(boardSize * boardSize))
     this.generation = 0
   }
 
@@ -18,21 +18,21 @@ class Board {
         const down = ((y + 1) % boardSize) * boardSize
         const left = (x || boardSize) - 1
         const right = (x + 1) % boardSize
-        const numNeighbors = (data[x + up] +
-                              data[right + up] +
-                              data[right + middle] +
-                              data[right + down] +
-                              data[x + down] +
-                              data[left + down] +
-                              data[left + middle] +
-                              data[left + up])
+        const numNeighbors = (!!data[x + up] +
+                              !!data[right + up] +
+                              !!data[right + middle] +
+                              !!data[right + down] +
+                              !!data[x + down] +
+                              !!data[left + down] +
+                              !!data[left + middle] +
+                              !!data[left + up])
         const index = x + middle
         switch (numNeighbors) {
           case 2:
-            lastData[index] = data[index]
+            lastData[index] = data[index] + !!data[index]
             break
           case 3:
-            lastData[index] = 1
+            lastData[index] = data[index] + 1
             break
           default:
             lastData[index] = 0
