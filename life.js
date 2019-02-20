@@ -5,7 +5,7 @@ const stepIntervalMs = 25
 class Board {
   constructor () {
     this.data = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
-    this.buffer = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
+    this.lastData = new Uint8Array(new ArrayBuffer(boardSize * boardSize))
     this.generation = 0
   }
 
@@ -28,19 +28,21 @@ class Board {
         const index = x + middle
         switch (numNeighbors) {
           case 2:
-            this.buffer[index] = this.data[index]
+            this.lastData[index] = this.data[index]
             break
           case 3:
-            this.buffer[index] = 1
+            this.lastData[index] = 1
             break
           default:
-            this.buffer[index] = 0
+            this.lastData[index] = 0
         }
       }
     }
-    const tmp = this.data
-    this.data = this.buffer
-    this.buffer = tmp
+
+    const swap = this.data
+    this.data = this.lastData
+    this.lastData = swap
+
     this.generation++
   }
 
@@ -68,7 +70,10 @@ class Game {
     canvas.width = boardSize * cellSize
     canvas.height = boardSize * cellSize
     container.appendChild(canvas)
-    return canvas.getContext('2d', { alpha: false })
+    const context = canvas.getContext('2d', { alpha: false })
+    context.fillStyle = '#ccc'
+    context.fillRect(0, 0, boardSize * cellSize, boardSize * cellSize)
+    return context
   }
 
   start () {
@@ -83,7 +88,7 @@ class Game {
       } else {
         this.averageTime = durationMs
       }
-      console.log(this.averageTime) // 6.05
+      console.log(this.averageTime) // 5.95
     }, stepIntervalMs)
   }
 
@@ -93,12 +98,12 @@ class Game {
   }
 
   render () {
-    this.context.fillStyle = '#ccc'
-    this.context.fillRect(0, 0, boardSize * cellSize, boardSize * cellSize)
-    this.context.fillStyle = '#222'
+    const { data, lastData } = this.board
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
-        if (this.board.data[x + y * boardSize]) {
+        const index = x + y * boardSize
+        if (data[index] !== lastData[index]) {
+          this.context.fillStyle = data[index] ? '#222' : '#ccc'
           this.context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
         }
       }
