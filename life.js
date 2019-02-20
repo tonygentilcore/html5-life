@@ -5,6 +5,7 @@ const stepIntervalMs = 75
 class Board {
   constructor () {
     this.data = new Array(boardSize * boardSize)
+    this.buffer = new Array(boardSize * boardSize)
     this.generation = 0
   }
 
@@ -24,21 +25,22 @@ class Board {
   }
 
   step () {
-    const newBoard = new Array(boardSize * boardSize)
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
         const numNeighbors = this._countNeighbors(x, y)
         const index = x + y * boardSize
         if (numNeighbors < 2 || numNeighbors > 3) {
-          newBoard[index] = 0
+          this.buffer[index] = 0
         } else if (numNeighbors === 3) {
-          newBoard[index] = 1
+          this.buffer[index] = 1
         } else {
-          newBoard[index] = this.data[index]
+          this.buffer[index] = this.data[index]
         }
       }
     }
-    this.data = newBoard
+    const tmp = this.data
+    this.data = this.buffer
+    this.buffer = tmp
     this.generation++
   }
 
