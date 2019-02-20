@@ -1,6 +1,5 @@
-const boardSize = 250
-const cellSize = 4
-const stepIntervalMs = 25
+const boardSize = 300
+const cellSize = 2
 
 class Board {
   constructor () {
@@ -49,7 +48,7 @@ class Board {
   randomize () {
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
-        this.data[x + y * boardSize] = Math.random() > 0.75 ? 1 : 0
+        this.data[x + y * boardSize] = Math.random() > 0.85 ? 1 : 0
       }
     }
   }
@@ -57,8 +56,9 @@ class Board {
 
 class Game {
   constructor (container) {
+    this.animate = this.animate.bind(this)
     this.board = new Board()
-    this.timer = null
+    this.running = false
     this.averageTime = 0
     this.deadCellColor = '#FFEBCD'
     this.context = this._createContext(container)
@@ -80,24 +80,27 @@ class Game {
   }
 
   start () {
-    if (this.timer) return
-    this.timer = setInterval(() => {
-      const start = window.performance.now()
-      this.board.step()
-      this.render()
-      const durationMs = window.performance.now() - start
-      if (this.averageTime) {
-        this.averageTime = ((this.averageTime * (this.board.generation - 1)) + durationMs) / this.board.generation
-      } else {
-        this.averageTime = durationMs
-      }
-      console.log(this.averageTime) // 5.95
-    }, stepIntervalMs)
+    if (this.running) return
+    this.running = true
+    window.requestAnimationFrame(this.animate)
   }
 
   stop () {
-    clearInterval(this.timer)
-    this.timer = null
+    this.running = false
+  }
+
+  animate () {
+    const start = window.performance.now()
+    this.board.step()
+    this.render()
+    const durationMs = window.performance.now() - start
+    if (this.averageTime) {
+      this.averageTime = ((this.averageTime * (this.board.generation - 1)) + durationMs) / this.board.generation
+    } else {
+      this.averageTime = durationMs
+    }
+    console.log(this.averageTime) // 5.95
+    if (this.running) window.requestAnimationFrame(this.animate)
   }
 
   render () {
