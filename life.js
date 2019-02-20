@@ -1,4 +1,5 @@
 const boardSize = 400
+const boardArea = boardSize * boardSize
 const cellSize = 2
 
 const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
@@ -12,22 +13,21 @@ class Board {
 
   step () {
     const { data, lastData } = this
-    for (let x = 0; x < boardSize; x++) {
-      for (let y = 0; y < boardSize; y++) {
-        const up = ((y || boardSize) - 1) * boardSize
-        const middle = y * boardSize
-        const down = ((y + 1) % boardSize) * boardSize
+    for (let x = 0; x < boardSize; ++x) {
+      for (let y = 0; y < boardArea; y += boardSize) {
+        const up = ((y || boardArea) - boardSize)
+        const down = ((y + boardSize) % boardArea)
         const left = (x || boardSize) - 1
         const right = (x + 1) % boardSize
         const numNeighbors = (!!data[x + up] +
                               !!data[right + up] +
-                              !!data[right + middle] +
+                              !!data[right + y] +
                               !!data[right + down] +
                               !!data[x + down] +
                               !!data[left + down] +
-                              !!data[left + middle] +
+                              !!data[left + y] +
                               !!data[left + up])
-        const index = x + middle
+        const index = x + y
         switch (numNeighbors) {
           case 2:
             lastData[index] = data[index] + !!data[index]
@@ -48,10 +48,8 @@ class Board {
   }
 
   randomize () {
-    for (let x = 0; x < boardSize; x++) {
-      for (let y = 0; y < boardSize; y++) {
-        this.data[x + y * boardSize] = Math.random() > 0.9 ? 1 : 0
-      }
+    for (let i = 0; i < boardArea; ++i) {
+      this.data[i] = Math.random() > 0.9 ? 1 : 0
     }
   }
 }
@@ -114,8 +112,7 @@ class Game {
   render () {
     const { board, context, imageData, palette, abgrImageData } = this
     const { data } = board
-    const dataLength = data.length
-    for (let i = 0; i < dataLength; i++) {
+    for (let i = 0; i < boardArea; ++i) {
       abgrImageData[i] = palette[data[i]]
     }
     context.putImageData(imageData, 0, 0)
