@@ -1,6 +1,6 @@
-const boardSize = 400
+const boardSize = 1200
 const boardArea = boardSize * boardSize
-const cellSize = 2
+const cellSize = 1
 
 const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
 
@@ -105,7 +105,7 @@ class Game {
     const durationMs = window.performance.now() - start
     this.frameTimes.push(durationMs)
     this.frameTimes.shift()
-    console.log(average(this.frameTimes)) // 5.0
+    console.log(average(this.frameTimes)) // 24.5
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
