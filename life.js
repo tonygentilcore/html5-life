@@ -14,11 +14,11 @@ class Board {
   step () {
     const { data, lastData } = this
     for (let x = 0; x < boardSize; ++x) {
+      const left = (x || boardSize) - 1
+      const right = (x + 1) % boardSize
       for (let y = 0; y < boardArea; y += boardSize) {
         const up = ((y || boardArea) - boardSize)
         const down = ((y + boardSize) % boardArea)
-        const left = (x || boardSize) - 1
-        const right = (x + 1) % boardSize
         const numNeighbors = (!!data[x + up] +
                               !!data[right + up] +
                               !!data[right + y] +
