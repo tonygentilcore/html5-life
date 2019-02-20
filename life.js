@@ -10,18 +10,19 @@ class Board {
   }
 
   _countNeighbors (x, y) {
-    const up = (y || boardSize) - 1
-    const down = (y + 1) % boardSize
+    const up = ((y || boardSize) - 1) * boardSize
+    const middle = y * boardSize
+    const down = ((y + 1) % boardSize) * boardSize
     const left = (x || boardSize) - 1
     const right = (x + 1) % boardSize
-    return (this.data[x + up * boardSize] +
-            this.data[right + up * boardSize] +
-            this.data[right + y * boardSize] +
-            this.data[right + down * boardSize] +
-            this.data[x + down * boardSize] +
-            this.data[left + down * boardSize] +
-            this.data[left + y * boardSize] +
-            this.data[left + up * boardSize])
+    return (this.data[x + up] +
+            this.data[right + up] +
+            this.data[right + middle] +
+            this.data[right + down] +
+            this.data[x + down] +
+            this.data[left + down] +
+            this.data[left + middle] +
+            this.data[left + up])
   }
 
   step () {
