@@ -10,6 +10,7 @@ class Board {
   }
 
   step () {
+    const { data, lastData } = this
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
         const up = ((y || boardSize) - 1) * boardSize
@@ -17,32 +18,31 @@ class Board {
         const down = ((y + 1) % boardSize) * boardSize
         const left = (x || boardSize) - 1
         const right = (x + 1) % boardSize
-        const numNeighbors = (this.data[x + up] +
-                              this.data[right + up] +
-                              this.data[right + middle] +
-                              this.data[right + down] +
-                              this.data[x + down] +
-                              this.data[left + down] +
-                              this.data[left + middle] +
-                              this.data[left + up])
+        const numNeighbors = (data[x + up] +
+                              data[right + up] +
+                              data[right + middle] +
+                              data[right + down] +
+                              data[x + down] +
+                              data[left + down] +
+                              data[left + middle] +
+                              data[left + up])
         const index = x + middle
         switch (numNeighbors) {
           case 2:
-            this.lastData[index] = this.data[index]
+            lastData[index] = data[index]
             break
           case 3:
-            this.lastData[index] = 1
+            lastData[index] = 1
             break
           default:
-            this.lastData[index] = 0
+            lastData[index] = 0
         }
       }
     }
 
-    const swap = this.data
-    this.data = this.lastData
+    const swap = data
+    this.data = lastData
     this.lastData = swap
-
     this.generation++
   }
 
@@ -98,13 +98,14 @@ class Game {
   }
 
   render () {
+    const { context } = this
     const { data, lastData } = this.board
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
         const index = x + y * boardSize
         if (data[index] !== lastData[index]) {
-          this.context.fillStyle = data[index] ? '#222' : '#ccc'
-          this.context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+          context.fillStyle = data[index] ? '#222' : '#ccc'
+          context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
         }
       }
     }
