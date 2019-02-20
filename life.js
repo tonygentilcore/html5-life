@@ -1,5 +1,7 @@
-const boardSize = 300
+const boardSize = 400
 const cellSize = 2
+
+const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
 
 class Board {
   constructor () {
@@ -48,7 +50,7 @@ class Board {
   randomize () {
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
-        this.data[x + y * boardSize] = Math.random() > 0.85 ? 1 : 0
+        this.data[x + y * boardSize] = Math.random() > 0.9 ? 1 : 0
       }
     }
   }
@@ -58,24 +60,33 @@ class Game {
   constructor (container) {
     this.animate = this.animate.bind(this)
     this.board = new Board()
+    this.imageData = new window.ImageData(boardSize, boardSize)
+    this.abgrImageData = new Uint32Array(this.imageData.data.buffer) // TODO: Handle big endian
     this.running = false
-    this.averageTime = 0
+    this.frameTimes = new Array(50)
     this.deadCellColor = '#FFEBCD'
     this.context = this._createContext(container)
     this.palette = window.chroma.scale(['#32CD32', '#8B4513']).mode('lch').colors(256)
     this.palette[0] = this.deadCellColor
+    this.palette = this.palette.map(c => {
+      const [r, g, b] = window.chroma(c).rgb()
+      return 0xff000000 | (b << 16) | (g << 8) | r
+    })
     this.board.randomize()
     this.render()
   }
 
   _createContext (container) {
     const canvas = document.createElement('CANVAS')
-    canvas.width = boardSize * cellSize
-    canvas.height = boardSize * cellSize
+    canvas.width = boardSize
+    canvas.height = boardSize
+    canvas.style.imageRendering = 'pixelated'
+    canvas.style.width = `${boardSize * cellSize}px`
+    canvas.style.height = `${boardSize * cellSize}px`
     container.appendChild(canvas)
     const context = canvas.getContext('2d', { alpha: false })
     context.fillStyle = this.deadCellColor
-    context.fillRect(0, 0, boardSize * cellSize, boardSize * cellSize)
+    context.fillRect(0, 0, boardSize, boardSize)
     return context
   }
 
@@ -94,26 +105,19 @@ class Game {
     this.board.step()
     this.render()
     const durationMs = window.performance.now() - start
-    if (this.averageTime) {
-      this.averageTime = ((this.averageTime * (this.board.generation - 1)) + durationMs) / this.board.generation
-    } else {
-      this.averageTime = durationMs
-    }
-    console.log(this.averageTime) // 5.95
+    this.frameTimes.push(durationMs)
+    this.frameTimes.shift()
+    console.log(average(this.frameTimes)) // 5.0
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
   render () {
-    const { context, palette } = this
-    const { data, lastData } = this.board
-    for (let x = 0; x < boardSize; x++) {
-      for (let y = 0; y < boardSize; y++) {
-        const index = x + y * boardSize
-        if (data[index] !== lastData[index]) {
-          context.fillStyle = palette[data[index]]
-          context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
-        }
-      }
+    const { board, context, imageData, palette, abgrImageData } = this
+    const { data } = board
+    const dataLength = data.length
+    for (let i = 0; i < dataLength; i++) {
+      abgrImageData[i] = palette[data[i]]
     }
+    context.putImageData(imageData, 0, 0)
   }
 }
