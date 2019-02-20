@@ -1,6 +1,6 @@
-const boardSize = 100
-const cellSize = 8
-const stepIntervalMs = 100
+const boardSize = 400
+const cellSize = 2
+const stepIntervalMs = 75
 
 class Board {
   constructor () {
@@ -54,27 +54,19 @@ class Board {
 class Game {
   constructor (container) {
     this.board = new Board()
-    this.container = container
     this.timer = null
     this.averageTime = 0
-    this._setup()
-  }
-
-  _setup () {
-    this.container.style.width = `${boardSize * cellSize}px`
-    this.container.style.height = `${boardSize * cellSize}px`
-    for (let x = 0; x < boardSize; x++) {
-      for (let y = 0; y < boardSize; y++) {
-        const cell = document.createElement('DIV')
-        cell.className = 'cell'
-        cell.style.width = `${cellSize}px`
-        cell.style.height = `${cellSize}px`
-        this.container.appendChild(cell)
-      }
-    }
-
+    this.context = this._createContext(container)
     this.board.randomize()
     this.render()
+  }
+
+  _createContext (container) {
+    const canvas = document.createElement('CANVAS')
+    canvas.width = boardSize * cellSize
+    canvas.height = boardSize * cellSize
+    container.appendChild(canvas)
+    return canvas.getContext('2d', { alpha: false })
   }
 
   start () {
@@ -99,11 +91,14 @@ class Game {
   }
 
   render () {
-    const cells = this.container.children
+    this.context.fillStyle = '#ccc'
+    this.context.fillRect(0, 0, boardSize * cellSize, boardSize * cellSize)
+    this.context.fillStyle = '#222'
     for (let x = 0; x < boardSize; x++) {
       for (let y = 0; y < boardSize; y++) {
-        const index = x + y * boardSize
-        cells[index].style.background = this.board.data[index] ? '#222' : '#ccc'
+        if (this.board.data[x + y * boardSize]) {
+          this.context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+        }
       }
     }
   }
