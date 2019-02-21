@@ -1,7 +1,7 @@
 const boardSize = 2048
 const boardArea = boardSize * boardSize
 const cellSize = 1
-const numWorkers = navigator.hardwareConcurrency
+const numWorkers = Math.max(navigator.hardwareConcurrency - 1, 1)
 
 const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
 
@@ -14,18 +14,21 @@ class Board {
     this.promises = new Array(numWorkers)
   }
 
-  async step () {
+  stepAsync () {
     const { data, lastData, promises, workers } = this
 
     for (let i = 0; i < numWorkers; i++) {
       const chunkSize = (boardArea / numWorkers)
-      const rowStart = i * chunkSize
-      const rowEnd = rowStart + chunkSize
+      const rowStart = Math.ceil(i * chunkSize)
+      const rowEnd = Math.ceil(rowStart + chunkSize)
       promises[i] = new Promise(resolve => { workers[i].onmessage = resolve })
       workers[i].postMessage({ data, lastData, boardSize, boardArea, rowStart, rowEnd })
     }
-    await Promise.all(promises)
+    return Promise.all(promises)
+  }
 
+  swap () {
+    const { data, lastData } = this
     const swap = data
     this.data = lastData
     this.lastData = swap
@@ -93,12 +96,14 @@ class Game {
 
   async animate () {
     const start = window.performance.now()
-    await this.board.step()
+    const promise = this.board.stepAsync()
     this.render()
+    await promise
+    this.board.swap()
     const durationMs = window.performance.now() - start
     this.frameTimes.push(durationMs)
     this.frameTimes.shift()
-    console.log(average(this.frameTimes)) // 42
+    console.log(average(this.frameTimes)) // 31
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
