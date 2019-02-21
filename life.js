@@ -13,20 +13,20 @@ class Board {
 
   step () {
     const { data, lastData } = this
-    for (let x = 0; x < boardSize; ++x) {
-      const left = (x || boardSize) - 1
-      const right = (x + 1) % boardSize
-      for (let y = 0; y < boardArea; y += boardSize) {
-        const up = ((y || boardArea) - boardSize)
-        const down = ((y + boardSize) % boardArea)
-        const numDeadNeighbors = (!data[x + up] +
+    for (let y = 0; y < boardArea; y += boardSize) {
+      const up = ((y || boardArea) - boardSize)
+      const down = ((y + boardSize) % boardArea)
+      for (let x = 0; x < boardSize; ++x) {
+        const left = (x || boardSize) - 1
+        const right = (x + 1) % boardSize
+        const numDeadNeighbors = (!data[left + up] +
+                                  !data[x + up] +
                                   !data[right + up] +
-                                  !data[right + y] +
-                                  !data[right + down] +
-                                  !data[x + down] +
-                                  !data[left + down] +
                                   !data[left + y] +
-                                  !data[left + up])
+                                  !data[right + y] +
+                                  !data[left + down] +
+                                  !data[x + down] +
+                                  !data[right + down])
         const index = x + y
         switch (numDeadNeighbors) {
           case 6:
