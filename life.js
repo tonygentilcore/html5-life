@@ -19,20 +19,20 @@ class Board {
       for (let y = 0; y < boardArea; y += boardSize) {
         const up = ((y || boardArea) - boardSize)
         const down = ((y + boardSize) % boardArea)
-        const numNeighbors = (!!data[x + up] +
-                              !!data[right + up] +
-                              !!data[right + y] +
-                              !!data[right + down] +
-                              !!data[x + down] +
-                              !!data[left + down] +
-                              !!data[left + y] +
-                              !!data[left + up])
+        const numDeadNeighbors = (!data[x + up] +
+                                  !data[right + up] +
+                                  !data[right + y] +
+                                  !data[right + down] +
+                                  !data[x + down] +
+                                  !data[left + down] +
+                                  !data[left + y] +
+                                  !data[left + up])
         const index = x + y
-        switch (numNeighbors) {
-          case 2:
+        switch (numDeadNeighbors) {
+          case 6:
             lastData[index] = data[index] + !!data[index]
             break
-          case 3:
+          case 5:
             lastData[index] = data[index] + 1
             break
           default:
@@ -100,9 +100,9 @@ class Game {
 
   animate () {
     const start = window.performance.now()
-    this.board.step()
-    this.render()
+    this.board.step() // 19.0
     const durationMs = window.performance.now() - start
+    this.render()
     this.frameTimes.push(durationMs)
     this.frameTimes.shift()
     console.log(average(this.frameTimes)) // 24.5
