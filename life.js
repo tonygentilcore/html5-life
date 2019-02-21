@@ -34,7 +34,8 @@ class Board {
 
   randomize () {
     for (let i = 0; i < boardArea; ++i) {
-      this.data[i] = Math.random() > 0.9 ? 1 : 0
+      this.data[i] = Math.random() > 0.5 ? 1 : 0
+      this.lastData[i] = this.data[i]
     }
   }
 }
@@ -55,8 +56,7 @@ class Game {
       const [r, g, b] = window.chroma(c).rgb()
       return 0xff000000 | (b << 16) | (g << 8) | r
     })
-    this.board.randomize()
-    this.render()
+    this.randomize()
   }
 
   _createContext (container) {
@@ -81,6 +81,14 @@ class Game {
 
   stop () {
     this.running = false
+  }
+
+  randomize () {
+    this.stop()
+    window.requestAnimationFrame(() => {
+      this.board.randomize()
+      this.render()
+    })
   }
 
   async animate () {
