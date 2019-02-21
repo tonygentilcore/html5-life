@@ -6,11 +6,6 @@
     background: #eee;
   }
 
-  .cell {
-    background: gray;
-    display: block;
-  }
-
   #container {
     margin: auto;
     width: fit-content;
@@ -26,14 +21,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.0.3/chroma.min.js"></script>
 <script src="life.js"></script>
 
-<div id="container"></div>
-
-<script>
-  const game = new Game(document.getElementById('container'))
-</script>
-
 <div id="controls">
   <input type="button" value="start" onclick="game.start()">
   <input type="button" value="stop" onclick="game.stop()">
   <input type="button" value="randomize" onclick="game.randomize()">
 </div>
+
+<div id="container"></div>
+
+<script>
+  const game = new Game(document.getElementById('container'))
+</script>

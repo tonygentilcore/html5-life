@@ -1,4 +1,4 @@
-const boardSize = 1200
+const boardSize = 2048
 const boardArea = boardSize * boardSize
 const cellSize = 1
 const numWorkers = navigator.hardwareConcurrency
@@ -98,7 +98,7 @@ class Game {
     const durationMs = window.performance.now() - start
     this.frameTimes.push(durationMs)
     this.frameTimes.shift()
-    console.log(average(this.frameTimes)) // 13
+    console.log(average(this.frameTimes)) // 42
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
