@@ -82,6 +82,8 @@ class Game {
     const context = canvas.getContext('2d', { alpha: false })
     context.fillStyle = this.deadCellColor
     context.fillRect(0, 0, boardSize, boardSize)
+    context.font = '12px monospace'
+    context.fillStyle = '#000'
     return context
   }
 
@@ -112,7 +114,6 @@ class Game {
     const durationMs = window.performance.now() - start
     this.frameTimes.push(durationMs)
     this.frameTimes.shift()
-    console.log(average(this.frameTimes)) // 31
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
@@ -123,5 +124,6 @@ class Game {
       abgrImageData[i] = palette[data[i]]
     }
     context.putImageData(imageData, 0, 0)
+    context.fillText(`Frame time: ${Math.round(average(this.frameTimes))}ms`, 10, 15) // 19ms
   }
 }
