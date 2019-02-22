@@ -3,10 +3,11 @@
 <style>
   body {
     align-items: center;
-    background: #eee;
+    background: #DEB887;
   }
 
   #container {
+    border: 1px solid #8B4513;
     margin: auto;
     width: fit-content;
   }
@@ -19,12 +20,15 @@
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.0.3/chroma.min.js"></script>
+<script src="perlin.js"></script>
 <script src="life.js"></script>
 
 <div id="controls">
   <input type="button" value="start" onclick="game.start()">
   <input type="button" value="stop" onclick="game.stop()">
-  <input type="button" value="randomize" onclick="game.randomize()">
+  <input type="button" value="perlin noise" onclick="game.randomize(window.noise.perlin2)">
+  <input type="button" value="simplex noise" onclick="game.randomize(window.noise.simplex2)">
+  <input type="button" value="uniform noise" onclick="game.randomize()">
 </div>
 
 <div id="container"></div>

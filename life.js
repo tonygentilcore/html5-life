@@ -1,4 +1,4 @@
-const boardSize = 2048
+const boardSize = 1600
 const boardArea = boardSize * boardSize
 const cellSize = 1
 const numWorkers = Math.max(navigator.hardwareConcurrency - 1, 1)
@@ -17,10 +17,10 @@ class Board {
   stepAsync () {
     const { data, lastData, promises, workers } = this
 
-    for (let i = 0; i < numWorkers; i++) {
-      const chunkSize = (boardArea / numWorkers)
-      const rowStart = Math.ceil(i * chunkSize)
-      const rowEnd = Math.ceil(rowStart + chunkSize)
+    for (let i = 0; i < numWorkers; ++i) {
+      const chunkSize = Math.ceil(boardArea / numWorkers)
+      const rowStart = i * chunkSize
+      const rowEnd = rowStart + chunkSize
       promises[i] = new Promise(resolve => { workers[i].onmessage = resolve })
       workers[i].postMessage({ data, lastData, boardSize, boardArea, rowStart, rowEnd })
     }
@@ -35,10 +35,19 @@ class Board {
     this.generation++
   }
 
-  randomize () {
-    for (let i = 0; i < boardArea; ++i) {
-      this.data[i] = Math.random() > 0.5 ? 1 : 0
-      this.lastData[i] = this.data[i]
+  randomize (noiseFunction) {
+    if (noiseFunction) {
+      window.noise.seed(Math.random())
+    } else {
+      noiseFunction = () => 0.5
+    }
+    for (let y = 0; y < boardSize; ++y) {
+      for (let x = 0; x < boardSize; ++x) {
+        const index = x + y * boardSize
+        const value = Math.abs(noiseFunction(x / 200, y / 200))
+        this.data[index] = Math.random() > value ? 1 : 0
+        this.lastData[index] = this.data[index]
+      }
     }
   }
 }
@@ -59,7 +68,7 @@ class Game {
       const [r, g, b] = window.chroma(c).rgb()
       return 0xff000000 | (b << 16) | (g << 8) | r
     })
-    this.randomize()
+    this.randomize(window.noise.perlin2)
   }
 
   _createContext (container) {
@@ -86,10 +95,10 @@ class Game {
     this.running = false
   }
 
-  randomize () {
+  randomize (noiseFunction) {
     this.stop()
     window.requestAnimationFrame(() => {
-      this.board.randomize()
+      this.board.randomize(noiseFunction)
       this.render()
     })
   }
