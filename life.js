@@ -49,6 +49,7 @@ class Board {
         this.lastData[index] = this.data[index]
       }
     }
+    this.generation = 0
   }
 }
 
@@ -103,6 +104,13 @@ class Game {
       this.board.randomize(noiseFunction)
       this.render()
     })
+  }
+
+  async step () {
+    if (this.running) return
+    this.running = false
+    if (this.board.generation === 0) await this.animate()
+    window.requestAnimationFrame(this.animate)
   }
 
   async animate () {
