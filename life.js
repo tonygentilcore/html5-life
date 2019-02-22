@@ -60,7 +60,7 @@ class Game {
     this.imageData = new window.ImageData(boardSize, boardSize)
     this.abgrImageData = new Uint32Array(this.imageData.data.buffer) // TODO: Handle big endian
     this.running = false
-    this.frameTimes = new Array(50)
+    this.frameTimes = []
     this.deadCellColor = '#FFEBCD'
     this.context = this._createContext(container)
     this.palette = window.chroma.scale(['#32CD32', '#8B4513']).mode('lch').colors(256)
@@ -121,7 +121,7 @@ class Game {
     this.board.swap()
     const durationMs = window.performance.now() - start
     this.frameTimes.push(durationMs)
-    this.frameTimes.shift()
+    if (this.frameTimes.length > 50) this.frameTimes.shift()
     if (this.running) window.requestAnimationFrame(this.animate)
   }
 
@@ -132,6 +132,8 @@ class Game {
       abgrImageData[i] = palette[data[i]]
     }
     context.putImageData(imageData, 0, 0)
-    context.fillText(`Frame time: ${Math.round(average(this.frameTimes))}ms`, 10, 15) // 19ms
+    if (this.frameTimes.length) {
+      context.fillText(`Frame time: ${Math.round(average(this.frameTimes))}ms`, 10, 15) // 19ms
+    }
   }
 }
