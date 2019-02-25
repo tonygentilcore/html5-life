@@ -63,7 +63,11 @@ class GameWebGL {
     canvas.style.width = `${boardSize * cellSize}px`
     canvas.style.height = `${boardSize * cellSize}px`
     container.appendChild(canvas)
-    const context = canvas.getContext('webgl2', { alpha: false, antialias: false })
+    const context = canvas.getContext('webgl2', {
+      alpha: false,
+      antialias: false,
+      depth: false
+    })
     return context
   }
 
