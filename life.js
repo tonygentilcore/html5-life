@@ -1,9 +1,4 @@
-const boardSize = 1600
-const boardArea = boardSize * boardSize
-const cellSize = 1
 const numWorkers = Math.max(navigator.hardwareConcurrency - 1, 1)
-
-const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
 
 class Board {
   constructor () {
@@ -73,6 +68,7 @@ class Game {
   }
 
   _createContext (container) {
+    while (container.firstChild) container.removeChild(container.firstChild)
     const canvas = document.createElement('CANVAS')
     canvas.width = boardSize
     canvas.height = boardSize

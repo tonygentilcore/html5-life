@@ -19,8 +19,58 @@
   }
 </style>
 
+<script id="quad-vertex-shader" type="x-shader/x-vertex">
+  attribute vec2 a_quad;
+
+  void main() {
+    gl_Position = vec4(a_quad, 0, 1.0);
+  }
+</script>
+<script id="game-of-life-fragment-shader" type="x-shader/x-fragment">
+  precision lowp float;
+
+  uniform sampler2D u_back;
+  uniform vec2 u_scale;
+
+  float get(vec2 offset) {
+    return texture2D(u_back, (gl_FragCoord.xy + offset) / u_scale).r;
+  }
+
+  void main() {
+    int sum =
+      int(ceil(get(vec2(-1.0, -1.0)))) +
+      int(ceil(get(vec2(-1.0,  0.0)))) +
+      int(ceil(get(vec2(-1.0,  1.0)))) +
+      int(ceil(get(vec2( 0.0, -1.0)))) +
+      int(ceil(get(vec2( 0.0,  1.0)))) +
+      int(ceil(get(vec2( 1.0, -1.0)))) +
+      int(ceil(get(vec2( 1.0,  0.0)))) +
+      int(ceil(get(vec2( 1.0,  1.0))));
+    gl_FragColor = (
+      sum == 3 ?
+      vec4(clamp(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 0.0, 1.0), 0.0, 0.0, 0.0) :
+      (sum == 2 ?
+       vec4(clamp(get(vec2(0.0, 0.0)) + clamp(get(vec2(0.0, 0.0)), 0.0, (1.0 / 256.0)), 0.0, 1.0), 0.0, 0.0, 0.0) :
+       vec4(0.0, 0.0, 0.0, 0.0))
+    );
+  }
+</script>
+<script id="display-fragment-shader" type="x-shader/x-fragment">
+  precision lowp float;
+
+  uniform sampler2D u_front;
+  uniform sampler2D u_colorMap;
+  uniform vec2 u_scale;
+
+  void main() {
+    float luminance = texture2D(u_front, gl_FragCoord.xy / u_scale).r;
+    gl_FragColor = texture2D(u_colorMap, vec2(luminance, 0.0));
+  }
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.0.3/chroma.min.js"></script>
+<script src="twgl.min.js"></script>
 <script src="perlin.js"></script>
+<script src="life-webgl.js"></script>
 <script src="life.js"></script>
 
 <div id="controls">
@@ -30,10 +80,25 @@
   <input type="button" value="perlin noise" onclick="game.randomize(window.noise.perlin2)">
   <input type="button" value="simplex noise" onclick="game.randomize(window.noise.simplex2)">
   <input type="button" value="uniform noise" onclick="game.randomize()">
+  <input type="checkbox" value="gpu" id="gpu" onclick="reset()" checked><label for="gpu">gpu</label>
 </div>
 
 <div id="container"></div>
 
 <script>
-  const game = new Game(document.getElementById('container'))
+  const boardSize = 2048
+  const boardArea = boardSize * boardSize
+  const cellSize = 1
+
+  const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
+
+  let game
+
+  function reset () {
+    const container = document.getElementById('container')
+    const gpu = document.getElementById('gpu').checked
+    if (game) game.stop()
+    game = gpu ? new GameWebGL(container) : new Game(container)
+  }
+  reset()
 </script>
