@@ -20,20 +20,25 @@
 </style>
 
 <script id="quad-vertex-shader" type="x-shader/x-vertex">
-  attribute vec2 a_quad;
+  #version 300 es
+
+  in vec2 a_quad;
 
   void main() {
     gl_Position = vec4(a_quad, 0, 1.0);
   }
 </script>
 <script id="game-of-life-fragment-shader" type="x-shader/x-fragment">
+  #version 300 es
+
   precision lowp float;
 
   uniform sampler2D u_back;
   uniform vec2 u_scale;
+  out vec4 fragColor;
 
   float get(vec2 offset) {
-    return texture2D(u_back, (gl_FragCoord.xy + offset) / u_scale).r;
+    return texture(u_back, (gl_FragCoord.xy + offset) / u_scale).r;
   }
 
   void main() {
@@ -46,7 +51,7 @@
       int(ceil(get(vec2( 1.0, -1.0)))) +
       int(ceil(get(vec2( 1.0,  0.0)))) +
       int(ceil(get(vec2( 1.0,  1.0))));
-    gl_FragColor = (
+    fragColor = (
       sum == 3 ?
       vec4(clamp(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 0.0, 1.0), 0.0, 0.0, 0.0) :
       (sum == 2 ?
@@ -56,15 +61,18 @@
   }
 </script>
 <script id="display-fragment-shader" type="x-shader/x-fragment">
+  #version 300 es
+
   precision lowp float;
 
   uniform sampler2D u_front;
   uniform sampler2D u_colorMap;
   uniform vec2 u_scale;
+  out vec4 fragColor;
 
   void main() {
-    float luminance = texture2D(u_front, gl_FragCoord.xy / u_scale).r;
-    gl_FragColor = texture2D(u_colorMap, vec2(luminance, 0.0));
+    float luminance = texture(u_front, gl_FragCoord.xy / u_scale).r;
+    fragColor = texture(u_colorMap, vec2(luminance, 0.0));
   }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.0.3/chroma.min.js"></script>
