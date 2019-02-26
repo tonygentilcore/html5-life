@@ -26,14 +26,20 @@ class GameWebGL {
       u_back: {
         mag: this.gl.NEAREST,
         min: this.gl.LINEAR,
-        format: this.gl.RGBA,
-        src: board
+        internalFormat: this.gl.R8,
+        src: board,
+        width: boardSize,
+        height: boardSize,
+        depth: 1
       },
       u_front: {
         mag: this.gl.NEAREST,
         min: this.gl.LINEAR,
-        format: this.gl.RGBA,
-        src: board
+        internalFormat: this.gl.R8,
+        src: board,
+        width: boardSize,
+        height: boardSize,
+        depth: 1
       },
       u_colorMap: {
         mag: this.gl.NEAREST,
@@ -83,7 +89,7 @@ class GameWebGL {
   }
 
   _createRandomBoard (noiseFunction) {
-    const stride = 4
+    const stride = 1
     const data = new Uint8Array(new ArrayBuffer(boardArea * stride))
     if (noiseFunction) {
       noise.seed(Math.random())
@@ -119,14 +125,20 @@ class GameWebGL {
       this.textures.u_back = twgl.createTexture(this.gl, {
         mag: this.gl.NEAREST,
         min: this.gl.LINEAR,
-        format: this.gl.RGBA,
-        src: board
+        internalFormat: this.gl.R8,
+        src: board,
+        width: boardSize,
+        height: boardSize,
+        depth: 1
       })
       this.textures.u_front = twgl.createTexture(this.gl, {
         mag: this.gl.NEAREST,
         min: this.gl.LINEAR,
-        format: this.gl.RGBA,
-        src: board
+        internalFormat: this.gl.R8,
+        src: board,
+        width: boardSize,
+        height: boardSize,
+        depth: 1
       })
       this.generation = 0
       this.render()
