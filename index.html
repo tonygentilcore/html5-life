@@ -35,6 +35,7 @@
 
   precision lowp float;
 
+  const float stepSize = 1.0 / 256.0;
   uniform sampler2D u_back;
   uniform vec2 u_scale;
   out float fragColor;
@@ -52,9 +53,9 @@
       int(ceil(textureOffset(u_back, i, ivec2( 1,  1)).r));
     fragColor = (
       numNeighbors == 3 ?
-        min(texture(u_back, i).r + (1.0 / 256.0), 1.0) : (
+        min(texture(u_back, i).r + stepSize, 1.0) : (
         numNeighbors == 2 ?
-          min(texture(u_back, i).r + min(texture(u_back, i).r, (1.0 / 256.0)), 1.0) :
+          min(texture(u_back, i).r + min(texture(u_back, i).r, stepSize), 1.0) :
           0.0
         )
     );
