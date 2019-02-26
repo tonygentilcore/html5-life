@@ -165,7 +165,7 @@ class GameWebGL {
     if (this.lastFrameTime) {
       const durationMs = now - this.lastFrameTime
       this.frameTimes.push(durationMs)
-      if (this.frameTimes.length > 32) this.frameTimes.shift()
+      if (this.frameTimes.length > 64) this.frameTimes.shift()
       if (this.frameTimes.length) {
         console.log(`Frame time: ${Math.round(average(this.frameTimes))}ms`)
       }

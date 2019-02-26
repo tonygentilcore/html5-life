@@ -22,6 +22,8 @@
 <script id="quad-vertex-shader" type="x-shader/x-vertex">
   #version 300 es
 
+  precision lowp float;
+
   in vec2 a_quad;
 
   void main() {
@@ -35,14 +37,14 @@
 
   uniform sampler2D u_back;
   uniform vec2 u_scale;
-  out vec4 fragColor;
+  out float fragColor;
 
   float get(vec2 offset) {
     return texture(u_back, (gl_FragCoord.xy + offset) / u_scale).r;
   }
 
   void main() {
-    int sum =
+    int numNeighbors =
       int(ceil(get(vec2(-1.0, -1.0)))) +
       int(ceil(get(vec2(-1.0,  0.0)))) +
       int(ceil(get(vec2(-1.0,  1.0)))) +
@@ -52,11 +54,12 @@
       int(ceil(get(vec2( 1.0,  0.0)))) +
       int(ceil(get(vec2( 1.0,  1.0))));
     fragColor = (
-      sum == 3 ?
-      vec4(clamp(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 0.0, 1.0), 0.0, 0.0, 0.0) :
-      (sum == 2 ?
-       vec4(clamp(get(vec2(0.0, 0.0)) + clamp(get(vec2(0.0, 0.0)), 0.0, (1.0 / 256.0)), 0.0, 1.0), 0.0, 0.0, 0.0) :
-       vec4(0.0, 0.0, 0.0, 0.0))
+      numNeighbors == 3 ?
+        clamp(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 0.0, 1.0) : (
+        numNeighbors == 2 ?
+          clamp(get(vec2(0.0, 0.0)) + clamp(get(vec2(0.0, 0.0)), 0.0, (1.0 / 256.0)), 0.0, 1.0) :
+          0.0
+        )
     );
   }
 </script>
