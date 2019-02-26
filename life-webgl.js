@@ -50,6 +50,8 @@ class GameWebGL {
     }
     twgl.resizeCanvasToDisplaySize(this.gl.canvas)
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height)
+    twgl.setBuffersAndAttributes(this.gl, this.stepProgramInfo, this.bufferInfo)
+    twgl.setBuffersAndAttributes(this.gl, this.displayProgramInfo, this.bufferInfo)
 
     this.render()
   }
@@ -167,7 +169,6 @@ class GameWebGL {
     twgl.bindFramebufferInfo(gl, twgl.createFramebufferInfo(this.gl, [
       { attachment: textures.u_front }
     ]))
-    twgl.setBuffersAndAttributes(gl, stepProgramInfo, bufferInfo)
     twgl.setUniforms(stepProgramInfo, { ...uniforms,
       u_back: textures.u_back
     })
@@ -178,7 +179,6 @@ class GameWebGL {
     const { bufferInfo, displayProgramInfo, gl, textures, uniforms } = this
     gl.useProgram(displayProgramInfo.program)
     twgl.bindFramebufferInfo(gl, null)
-    twgl.setBuffersAndAttributes(gl, displayProgramInfo, bufferInfo)
     twgl.setUniforms(displayProgramInfo, { ...uniforms,
       u_colorMap: textures.u_colorMap,
       u_front: textures.u_front
