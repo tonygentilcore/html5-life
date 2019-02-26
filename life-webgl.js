@@ -116,6 +116,8 @@ class GameWebGL {
 
   stop () {
     this.running = false
+    this.frameTimes = []
+    this.lastFrameTime = 0
   }
 
   randomize (noiseFunction) {
@@ -147,12 +149,15 @@ class GameWebGL {
 
   step () {
     if (this.running) return
-    this.running = false
-    if (this.generation === 0) this.animate()
-    requestAnimationFrame(this.animate)
+    requestAnimationFrame(() => {
+      this.running = true
+      this.animate()
+      this.stop()
+    })
   }
 
   animate () {
+    if (!this.running) return
     const now = performance.now()
     this.evolve()
     this.render()
@@ -160,13 +165,13 @@ class GameWebGL {
     if (this.lastFrameTime) {
       const durationMs = now - this.lastFrameTime
       this.frameTimes.push(durationMs)
-      if (this.frameTimes.length > 50) this.frameTimes.shift()
+      if (this.frameTimes.length > 32) this.frameTimes.shift()
       if (this.frameTimes.length) {
         console.log(`Frame time: ${Math.round(average(this.frameTimes))}ms`)
       }
     }
     this.lastFrameTime = now
-    if (this.running) requestAnimationFrame(this.animate)
+    requestAnimationFrame(this.animate)
   }
 
   swap () {
