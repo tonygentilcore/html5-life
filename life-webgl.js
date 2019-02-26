@@ -83,17 +83,19 @@ class GameWebGL {
   }
 
   _createRandomBoard (noiseFunction) {
-    const data = new Uint8Array(new ArrayBuffer(boardArea * 4))
+    const stride = 4
+    const data = new Uint8Array(new ArrayBuffer(boardArea * stride))
     if (noiseFunction) {
       noise.seed(Math.random())
     } else {
       noiseFunction = () => 0.5
     }
-    const boardLength = boardSize * 4
-    for (let y = 0; y < boardLength; y += 4) {
-      for (let x = 0; x < boardLength; x += 4) {
+    const noiseWidth = 200 * stride
+    const boardLength = boardSize * stride
+    for (let y = 0; y < boardLength; y += stride) {
+      for (let x = 0; x < boardLength; x += stride) {
         const index = x + y * boardSize
-        const value = Math.abs(noiseFunction(x / 800, y / 800))
+        const value = Math.abs(noiseFunction(x / noiseWidth, y / noiseWidth))
         data[index] = Math.random() > value ? 1 : 0
       }
     }
