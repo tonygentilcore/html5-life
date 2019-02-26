@@ -39,25 +39,22 @@
   uniform vec2 u_scale;
   out float fragColor;
 
-  float get(vec2 offset) {
-    return texture(u_back, (gl_FragCoord.xy + offset) / u_scale).r;
-  }
-
   void main() {
+    vec2 i = gl_FragCoord.xy / u_scale;
     int numNeighbors =
-      int(ceil(get(vec2(-1.0, -1.0)))) +
-      int(ceil(get(vec2(-1.0,  0.0)))) +
-      int(ceil(get(vec2(-1.0,  1.0)))) +
-      int(ceil(get(vec2( 0.0, -1.0)))) +
-      int(ceil(get(vec2( 0.0,  1.0)))) +
-      int(ceil(get(vec2( 1.0, -1.0)))) +
-      int(ceil(get(vec2( 1.0,  0.0)))) +
-      int(ceil(get(vec2( 1.0,  1.0))));
+      int(ceil(textureOffset(u_back, i, ivec2(-1, -1)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2(-1,  0)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2(-1,  1)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2( 0, -1)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2( 0,  1)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2( 1, -1)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2( 1,  0)).r)) +
+      int(ceil(textureOffset(u_back, i, ivec2( 1,  1)).r));
     fragColor = (
       numNeighbors == 3 ?
-        min(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 1.0) : (
+        min(texture(u_back, i).r + (1.0 / 256.0), 1.0) : (
         numNeighbors == 2 ?
-          min(get(vec2(0.0, 0.0)) + min(get(vec2(0.0, 0.0)), (1.0 / 256.0)), 1.0) :
+          min(texture(u_back, i).r + min(texture(u_back, i).r, (1.0 / 256.0)), 1.0) :
           0.0
         )
     );
