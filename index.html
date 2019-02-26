@@ -55,9 +55,9 @@
       int(ceil(get(vec2( 1.0,  1.0))));
     fragColor = (
       numNeighbors == 3 ?
-        clamp(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 0.0, 1.0) : (
+        min(get(vec2(0.0, 0.0)) + (1.0 / 256.0), 1.0) : (
         numNeighbors == 2 ?
-          clamp(get(vec2(0.0, 0.0)) + clamp(get(vec2(0.0, 0.0)), 0.0, (1.0 / 256.0)), 0.0, 1.0) :
+          min(get(vec2(0.0, 0.0)) + min(get(vec2(0.0, 0.0)), (1.0 / 256.0)), 1.0) :
           0.0
         )
     );
